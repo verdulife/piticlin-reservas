@@ -11,12 +11,12 @@
   /* USER COLORS */
 
   /* Accent color - Viva Magenta */
-  --value-accent: hsl(346, 66%, 44%);
-  --h-accent: 346;
-  --s-accent: 66%;
-  --l-accent: 44%;
-  --a-accent: 346, 66%, 44%;
-  --text-accent: var(--c-neutral);
+  --value-accent: hsl(335, 100%, 82%);
+  --h-accent: 335;
+  --s-accent: 100%;
+  --l-accent: 82%;
+  --a-accent: var(--h-accent), var(--s-accent), var(--l-accent);
+  --text-accent: var(--c-neutral-900);
 
   /* Alternative color - Plein Air */
   --value-alt: hsl(211, 25%, 82%);

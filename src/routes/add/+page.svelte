@@ -1,17 +1,20 @@
 <script>
-	import { Bookings } from '$lib/stores';
+	import { Bookings, Prices } from '$lib/stores';
+	import Notification from '$lib/components/Notification.svelte';
 
+	let success = false;
 	let booking = {};
-	const servicePrices = {
-		fotomaton: 295,
-		audiolibro: 89
-	};
 
 	function calculatePaymentDiference(payment, service) {
-		const servicePrice = servicePrices[service];
+		const servicePrice = $Prices[service];
 		const diference = servicePrice - payment;
 
 		return diference;
+	}
+
+	function showSuccess() {
+		success = true;
+		setTimeout(() => (success = false), 1500);
 	}
 
 	function addBooking(e) {
@@ -27,6 +30,8 @@
 
 		$Bookings.push(bookingValues);
 		$Bookings = $Bookings;
+
+		showSuccess();
 	}
 </script>
 
@@ -91,6 +96,10 @@
 			</select>
 		</div>
 
+		{#if success}
+			<Notification message="Reserva añadida correctamente" />
+		{/if}
+
 		<div class="input-wrapper col xfill">
 			<label for="payment">PAGO ADELANTADO (€)</label>
 			<input
@@ -110,7 +119,11 @@
 
 <style lang="postcss">
 	section {
-		padding: 4em;
+		padding: 2em;
+
+		@media (--tablet) {
+			padding: 1em;
+		}
 	}
 
 	form {
@@ -120,6 +133,10 @@
 		border-radius: 0.5em;
 		box-shadow: 0 20px 20px #00000010;
 		padding: 2em;
+
+		@media (--tablet) {
+			padding: 1em;
+		}
 	}
 
 	h3 {

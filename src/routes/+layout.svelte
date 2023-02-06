@@ -11,7 +11,11 @@
 	@import '../lib/layout-classes/all.css';
 
 	main {
-		height: calc(100% - 90px);
+		height: calc(100% - 70px);
 		background-color: var(--c-neutral-100);
+
+		@media (--tablet) {
+			height: calc(100% - 120px);
+		}
 	}
 </style>

@@ -1,42 +1,47 @@
 <script>
 	import { Bookings } from '$lib/stores';
+	import { Parser } from '@json2csv/plainjs';
+	import Booking from '../lib/components/Booking.svelte';
 
-	function formatDate(date) {
-		const d = new Date(date);
-		const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
+	let searchTerm = '';
 
-		return new Intl.DateTimeFormat('es-ES', options).format(d);
+	$: filterBookings = $Bookings.filter((b) => {
+		const booking = b.name.toLowerCase();
+		const term = searchTerm.toLowerCase();
+		return booking.includes(term);
+	});
+
+	function downloadCSV() {
+		try {
+			const opts = { withBOM: true, delimiter: ';' };
+			const parser = new Parser(opts);
+			const csv = parser.parse($Bookings);
+			const a = document.createElement('a');
+
+			a.href = `data:text/csv;charset=utf-8,${csv}`;
+			a.download = `piticlin-reservas_${new Date().toLocaleDateString().replaceAll('/', '-')}.csv`;
+			a.click();
+		} catch (err) {
+			console.error(err);
+			alert('Algo ha salido mal. Vuelva a intentarlo');
+		}
 	}
 </script>
 
 <section class="col acenter xfill">
 	{#if $Bookings.length > 0}
-		<table>
-			<thead>
-				<tr>
-					<th>NOMBRE</th>
-					<th>TELÉFONO</th>
-					<th>POBLACIÓN</th>
-					<th>FECHA RESERVA</th>
-					<th>SERVICIO</th>
-					<th>PAGO ADELANTADO</th>
-					<th>PAGO RESTANTE</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each $Bookings as booking}
-					<tr>
-						<td>{booking.name}</td>
-						<td>{booking.phone}</td>
-						<td>{booking.city}</td>
-						<td>{formatDate(booking.date)}</td>
-						<td>{booking.service}</td>
-						<td>{booking.payment}</td>
-						<td>{booking.diference}</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
+		<header class="row jbetween xfill">
+			<input class="round" type="text" placeholder="🔍 Buscar por nombre" bind:value={searchTerm} />
+			<button class="accent round" on:click={downloadCSV}>DESCARGAR CSV</button>
+		</header>
+
+		<ul class="col acenter xfill">
+			{#each filterBookings as booking}
+				<li class="xfill">
+					<Booking {booking} />
+				</li>
+			{/each}
+		</ul>
 	{:else}
 		<h3>No hay ninguna reserva</h3>
 	{/if}
@@ -44,26 +49,39 @@
 
 <style lang="postcss">
 	section {
-		padding: 4em;
-	}
+		padding: 2em;
 
-	tr {
-		background-color: var(--c-neutral);
-
-		&:nth-of-type(even) {
-			background-color: var(--c-neutral-200);
+		@media (--tablet) {
+			padding: 1em;
 		}
 	}
 
-	th,
-	td {
-		border: 1px solid;
-		border-color: var(--c-neutral-900);
-		padding: 1em;
+	header {
+		max-width: 800px;
+		padding: 1em 0;
+
+		& input {
+			background-color: var(--c-neutral);
+
+			@media (--tablet) {
+				max-width: 50%;
+			}
+		}
+
+		& button {
+			font-size: 14px;
+
+			@media (--tablet) {
+				max-width: 50%;
+			}
+		}
 	}
 
-	th {
-		background-color: var(--c-neutral-900);
-		color: var(--c-neutral);
+	ul {
+		gap: 0.25em;
+
+		& li {
+			max-width: 800px;
+		}
 	}
 </style>
